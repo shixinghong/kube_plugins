@@ -1,6 +1,7 @@
 package help
 
 import (
+	"fmt"
 	"github.com/spf13/cobra"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 	"k8s.io/client-go/kubernetes"
@@ -8,6 +9,7 @@ import (
 )
 
 var cfgFlags *genericclioptions.ConfigFlags
+var ShowLabels bool
 
 func Client() *kubernetes.Clientset {
 	cfgFlags = genericclioptions.NewConfigFlags(true)
@@ -27,4 +29,29 @@ func MergeFlags(cmds ...*cobra.Command) {
 	for _, cmd := range cmds {
 		cfgFlags.AddFlags(cmd.Flags())
 	}
+}
+
+func RunCmd(f func(c *cobra.Command, args []string) error) {
+	cmd := &cobra.Command{
+		Use:          "kubectl pods [flags]",
+		Short:        "list pods",
+		Example:      "kubectl pods [flags]",
+		SilenceUsage: true,
+		RunE:         f,
+	}
+
+	cmd.Flags().BoolVar(&ShowLabels, "show-labels", false, "--show-labels")
+
+	MergeFlags(cmd)
+	err := cmd.Execute()
+	if err != nil {
+		log.Fatalln(err)
+	}
+}
+
+func Map2String(m map[string]string) (ret string) {
+	for k, v := range m {
+		ret += fmt.Sprintf("%s:%s,", k, v)
+	}
+	return ret
 }
