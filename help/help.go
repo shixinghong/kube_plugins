@@ -10,6 +10,8 @@ import (
 
 var cfgFlags *genericclioptions.ConfigFlags
 var ShowLabels bool
+var Labels string
+var Fields string
 
 func Client() *kubernetes.Clientset {
 	cfgFlags = genericclioptions.NewConfigFlags(true)
@@ -41,7 +43,8 @@ func RunCmd(f func(c *cobra.Command, args []string) error) {
 	}
 
 	cmd.Flags().BoolVar(&ShowLabels, "show-labels", false, "--show-labels")
-
+	cmd.Flags().StringVar(&Labels, "labels", "", "kubectl pods --labels=\"k1=v1,k2=v1\"")
+	cmd.Flags().StringVar(&Fields, "fields", "", "kubectl pods --fields=\"status.phase=Running\"")
 	MergeFlags(cmd)
 	err := cmd.Execute()
 	if err != nil {

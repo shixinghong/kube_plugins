@@ -25,7 +25,10 @@ func run(c *cobra.Command, args []string) error {
 		ns = "default"
 	}
 	podList, err := clientSet.CoreV1().Pods(ns).
-		List(context.Background(), metav1.ListOptions{})
+		List(context.Background(), metav1.ListOptions{
+			LabelSelector: help.Labels,
+			FieldSelector: help.Fields,
+		})
 	if err != nil {
 		return err
 	}
