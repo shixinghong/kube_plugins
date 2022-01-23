@@ -12,7 +12,7 @@ import (
 var clientSet = help.Client()
 
 func main() {
-	help.RunCmd(run)
+	help.RunCmd()
 }
 
 func run(c *cobra.Command, args []string) error {

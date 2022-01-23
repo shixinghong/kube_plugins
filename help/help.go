@@ -19,11 +19,12 @@ func Client() *kubernetes.Clientset {
 	if err != nil {
 		log.Fatal(err)
 	}
-	clientSet, err := kubernetes.NewForConfig(config)
+
+	client, err := kubernetes.NewForConfig(config)
 	if err != nil {
 		log.Fatal(err)
 	}
-	return clientSet
+	return client
 }
 
 // MergeFlags 合并kubectl的flag
@@ -33,19 +34,24 @@ func MergeFlags(cmds ...*cobra.Command) {
 	}
 }
 
-func RunCmd(f func(c *cobra.Command, args []string) error) {
+func RunCmd() {
 	cmd := &cobra.Command{
 		Use:          "kubectl pods [flags]",
 		Short:        "list pods",
 		Example:      "kubectl pods [flags]",
 		SilenceUsage: true,
-		RunE:         f,
+		//RunE:         f,
 	}
 
 	cmd.Flags().BoolVar(&ShowLabels, "show-labels", false, "--show-labels")
 	cmd.Flags().StringVar(&Labels, "labels", "", "kubectl pods --labels=\"k1=v1,k2=v1\"")
 	cmd.Flags().StringVar(&Fields, "fields", "", "kubectl pods --fields=\"status.phase=Running\"")
-	MergeFlags(cmd)
+
+	MergeFlags(cmd, listCmd, promptCmd, cacheCmd)
+
+	// 加入子命令
+	cmd.AddCommand(listCmd, promptCmd, cacheCmd)
+
 	err := cmd.Execute()
 	if err != nil {
 		log.Fatalln(err)
