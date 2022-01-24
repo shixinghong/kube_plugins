@@ -27,6 +27,8 @@ func executorCmd(cmd *cobra.Command) func(in string) {
 			if err := cacheCmd.RunE(cmd, args); err != nil {
 				log.Fatal(err)
 			}
+		case "get":
+			getPodDetails(args)
 		}
 	}
 }

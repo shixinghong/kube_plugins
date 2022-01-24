@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/c-bata/go-prompt"
 	"os"
 	"strings"
@@ -21,7 +20,7 @@ func executor(in string) {
 	blocks := strings.Split(in, " ")
 	switch blocks[0] {
 	case "exit":
-		fmt.Println("Exit!")
+
 		os.Exit(0)
 	}
 

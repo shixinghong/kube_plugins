@@ -6,6 +6,7 @@ import (
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 	"k8s.io/client-go/kubernetes"
 	"log"
+	"sigs.k8s.io/yaml"
 )
 
 var cfgFlags *genericclioptions.ConfigFlags
@@ -63,4 +64,23 @@ func Map2String(m map[string]string) (ret string) {
 		ret += fmt.Sprintf("%s:%s,", k, v)
 	}
 	return ret
+}
+
+func getPodDetails(args []string) {
+	if len(args) == 0 {
+		log.Println("required pod name")
+		return
+	}
+	podName := args[0]
+	pod, err := fact.Core().V1().Pods().Lister().Pods("default").Get(podName)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	b, err := yaml.Marshal(pod)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	fmt.Println(string(b))
 }
